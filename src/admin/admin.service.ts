@@ -1,4 +1,8 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import {
+  Injectable,
+  NotImplementedException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { LoginDto, LoginResponseDto } from '@libs';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
@@ -14,7 +18,7 @@ export class AdminService {
     const { username, password } = dto;
 
     //* Check incoming login data
-    const usernameMatch = username === this.configService.get('ADMIN_LOGIN');
+    const usernameMatch = username === this.configService.get('ADMIN_USERNAME');
     const passwordMatch = password === this.configService.get('ADMIN_PASSWORD');
 
     if (!usernameMatch || !passwordMatch) {
@@ -22,7 +26,13 @@ export class AdminService {
     }
 
     const tokenPayload = { username, isAdmin: true };
-    const accessToken = await this.jwtService.signAsync(tokenPayload);
+    let accessToken: string;
+
+    try {
+      accessToken = await this.jwtService.signAsync(tokenPayload);
+    } catch (error) {
+      throw new NotImplementedException('Token error');
+    }
 
     return { accessToken };
   }
