@@ -9,10 +9,18 @@ import {
   UseGuards,
   Res,
   InternalServerErrorException,
+  UseInterceptors,
+  UploadedFiles,
+  UploadedFile,
+  ParseFilePipe,
+  MaxFileSizeValidator,
+  FileTypeValidator,
+  BadRequestException,
 } from '@nestjs/common';
 import { AdminService } from './admin.service';
-import { AtGuard, LoginDto } from '@libs';
+import { allowedMimeTypes, AtGuard, LoginDto, MAX_FILE_SIZE } from '@libs';
 import { Response } from 'express';
+import { AnyFilesInterceptor, FileInterceptor } from '@nestjs/platform-express';
 
 @Controller('admin')
 export class AdminController {
@@ -38,6 +46,27 @@ export class AdminController {
   @UseGuards(AtGuard)
   async getAllFiles() {
     return this.adminService.getAllFiles();
+  }
+
+  @Post('files')
+  @UseInterceptors(FileInterceptor('file'))
+  async processFiles(
+    @UploadedFile(
+      new ParseFilePipe({
+        validators: [
+          new MaxFileSizeValidator({ maxSize: MAX_FILE_SIZE }),
+          new FileTypeValidator({
+            fileType: allowedMimeTypes,
+          }),
+        ],
+      }),
+    )
+    file: Express.Multer.File,
+  ) {
+    await new Promise((resolve) => {
+      setTimeout(() => resolve('Response after 5 seconds'), 5000);
+    });
+    return this.adminService.processFiles(file);
   }
 
   @Get('files/:filename')

@@ -10,14 +10,16 @@ import { ConfigService } from '@nestjs/config';
 import { join } from 'path';
 import { createReadStream } from 'fs';
 import { readdir, stat, unlink } from 'fs/promises';
+import { FileService } from 'src/file/file.service';
 
 @Injectable()
 export class AdminService {
-  private readonly uploadDir = join(process.cwd(), '../uploads');
+  private readonly uploadDir = join(process.cwd(), 'src/uploads');
 
   constructor(
     private readonly jwtService: JwtService,
     private readonly configService: ConfigService,
+    private readonly filesService: FileService,
   ) {}
 
   async login(dto: LoginDto): Promise<LoginResponseDto> {
@@ -53,6 +55,19 @@ export class AdminService {
       response.push({ name: file, size: stats.size });
     }
     return response;
+  }
+
+  async processFiles(file: Express.Multer.File) {
+    try {
+      const outputFilename = await this.filesService.generateOutput(file);
+      const filePath = join(this.uploadDir, outputFilename);
+      const stats = await stat(filePath);
+      return { name: outputFilename, size: stats.size };
+    } catch (error) {
+      throw new NotImplementedException(
+        'File processing error ' + error?.message || '',
+      );
+    }
   }
 
   async getSpecificFile(filename: string) {
