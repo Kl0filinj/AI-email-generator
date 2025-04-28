@@ -59,7 +59,8 @@ export class AdminService {
 
   async processFiles(file: Express.Multer.File) {
     try {
-      const outputFilename = await this.filesService.generateOutput(file);
+      // const outputFilename = await this.filesService.generateOutput(file);
+      const outputFilename = await this.filesService.prepareInput(file.buffer);
       const filePath = join(this.uploadDir, outputFilename);
       const stats = await stat(filePath);
       return { name: outputFilename, size: stats.size };

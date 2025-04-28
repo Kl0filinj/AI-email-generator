@@ -63,9 +63,6 @@ export class AdminController {
     )
     file: Express.Multer.File,
   ) {
-    await new Promise((resolve) => {
-      setTimeout(() => resolve('Response after 5 seconds'), 5000);
-    });
     return this.adminService.processFiles(file);
   }
 
