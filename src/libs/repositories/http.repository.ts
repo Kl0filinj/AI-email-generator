@@ -75,7 +75,9 @@ export class HttpRepository {
 
     try {
       const response = await firstValueFrom(
-        this.httpService.get(url, { params }).pipe(map((resp) => resp.data)),
+        this.httpService
+          .get(url, { params })
+          .pipe(map((resp) => resp.data.data)),
       );
 
       return {

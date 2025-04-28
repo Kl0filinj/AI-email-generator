@@ -217,12 +217,12 @@ export class FileService {
       let score: number;
       let verification: string;
       try {
-        let { email, score, verification } =
+        ({ email, score, verification } =
           await this.httpRepository.getCompanyEmail({
             firstName: splittedFullName[0],
             lastName: splittedFullName[1],
             domain,
-          });
+          }));
         console.log('@@ HUNTER email : ', email);
         console.log('@@ HUNTER score : ', score);
         console.log('@@ HUNTER verification : ', verification);
@@ -238,6 +238,7 @@ export class FileService {
         verification === 'valid' ||
         (verification === 'accept_all' && +score > 85)
       ) {
+        console.log('@@ MATCHED PERSON: ', name);
         return { email, person: name };
       }
     }
