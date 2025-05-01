@@ -11,6 +11,7 @@ import { join } from 'path';
 import { createReadStream } from 'fs';
 import { readdir, stat, unlink } from 'fs/promises';
 import { FileService } from 'src/file/file.service';
+import { PrismaService } from 'src/prisma/prisma.service';
 
 @Injectable()
 export class AdminService {
@@ -20,6 +21,7 @@ export class AdminService {
     private readonly jwtService: JwtService,
     private readonly configService: ConfigService,
     private readonly filesService: FileService,
+    private readonly prismaService: PrismaService,
   ) {}
 
   async login(dto: LoginDto): Promise<LoginResponseDto> {
@@ -47,7 +49,6 @@ export class AdminService {
 
   async getAllFiles() {
     const files = await readdir(this.uploadDir);
-
     const response = [];
     for (const file of files) {
       const filePath = join(this.uploadDir, file);
