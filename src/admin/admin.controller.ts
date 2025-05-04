@@ -42,6 +42,8 @@ export class AdminController {
     return { message: 'ok' };
   }
 
+  //#region Files
+
   @Get('files')
   @UseGuards(AtGuard)
   async getAllFiles() {
@@ -49,6 +51,7 @@ export class AdminController {
   }
 
   @Post('files')
+  @UseGuards(AtGuard)
   @UseInterceptors(FileInterceptor('file'))
   async processFiles(
     @UploadedFile(
@@ -66,15 +69,19 @@ export class AdminController {
     return this.adminService.processFiles(file);
   }
 
-  @Get('files/:filename')
+  //! OBSOLETE (We have a signed url for the file)
+  // @Get('files/:filename')
+  // @UseGuards(AtGuard)
+  // async getFile(@Param('filename') filename: string, @Res() res: Response) {
+  //   const fileStream = await this.adminService.getSpecificFile(filename);
+  //   fileStream.pipe(res);
+  // }
+
+  @Delete('files/:id')
   @UseGuards(AtGuard)
-  async getFile(@Param('filename') filename: string, @Res() res: Response) {
-    const fileStream = await this.adminService.getSpecificFile(filename);
-    fileStream.pipe(res);
+  async deleteFile(@Param('id') id: string) {
+    return this.adminService.deleteSpecificFile(id);
   }
 
-  @Delete('files/:filename')
-  async deleteFile(@Param('filename') filename: string) {
-    return this.adminService.deleteSpecificFile(filename);
-  }
+  //#endregion
 }

@@ -7,21 +7,14 @@ import {
 import { LoginDto, LoginResponseDto } from '@libs';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
-import { join } from 'path';
-import { createReadStream } from 'fs';
-import { readdir, stat, unlink } from 'fs/promises';
 import { FileService } from 'src/file/file.service';
-import { PrismaService } from 'src/prisma/prisma.service';
 
 @Injectable()
 export class AdminService {
-  private readonly uploadDir = join(process.cwd(), 'src/uploads');
-
   constructor(
     private readonly jwtService: JwtService,
     private readonly configService: ConfigService,
     private readonly filesService: FileService,
-    private readonly prismaService: PrismaService,
   ) {}
 
   async login(dto: LoginDto): Promise<LoginResponseDto> {
@@ -48,47 +41,25 @@ export class AdminService {
   }
 
   async getAllFiles() {
-    const files = await readdir(this.uploadDir);
-    const response = [];
-    for (const file of files) {
-      const filePath = join(this.uploadDir, file);
-      const stats = await stat(filePath);
-      response.push({ name: file, size: stats.size });
-    }
-    return response;
+    return this.filesService.getAllFiles();
   }
 
   async processFiles(file: Express.Multer.File) {
-    try {
-      // const outputFilename = await this.filesService.generateOutput(file);
-      const outputFilename = await this.filesService.prepareInput(file.buffer);
-      const filePath = join(this.uploadDir, outputFilename);
-      const stats = await stat(filePath);
-      return { name: outputFilename, size: stats.size };
-    } catch (error) {
-      throw new NotImplementedException(
-        'File processing error ' + error?.message || '',
-      );
-    }
+    return this.filesService.generateOutput(file);
   }
 
-  async getSpecificFile(filename: string) {
-    try {
-      const filePath = join(this.uploadDir, filename);
-      const fileStream = createReadStream(filePath);
-      return fileStream;
-    } catch (error) {
-      throw new NotFoundException('File was not found');
-    }
-  }
+  // async getSpecificFile(filename: string) {
+  //   try {
+  //     const filePath = join(this.uploadDir, filename);
+  //     const fileStream = createReadStream(filePath);
+  //     return fileStream;
+  //   } catch (error) {
+  //     throw new NotFoundException('File was not found');
+  //   }
+  // }
 
-  async deleteSpecificFile(filename: string) {
-    const filePath = join(this.uploadDir, filename);
-    try {
-      await unlink(filePath);
-      return { message: `File ${filename} has been successfully deleted.` };
-    } catch (error) {
-      throw new NotFoundException('File not found or could not be deleted');
-    }
+  async deleteSpecificFile(id: string) {
+    await this.filesService.deleteFile(id);
+    return { message: `File ${id} was successfully deleted` };
   }
 }

@@ -14,7 +14,8 @@ datasource db {
 }
 
 model file {
-  storedId     String   @id @default(uuid())
+  id           String   @id @default(uuid())
+  storedId     String   @unique()
   originalName String
   size         Int      @default(0)
   createdAt    DateTime @default(now())

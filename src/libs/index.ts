@@ -4,3 +4,4 @@ export * from './dto';
 export * from './constants';
 export * from './repositories';
 export * from './helpers';
+export * from './entities';
