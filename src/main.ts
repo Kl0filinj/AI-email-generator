@@ -10,6 +10,7 @@ async function bootstrap() {
     origin: [
       'http://localhost:3050',
       'https://llama-rich-kodiak.ngrok-free.app',
+      'https://ai-email-generator-admin-panel.vercel.app',
     ],
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
     allowedHeaders: [
