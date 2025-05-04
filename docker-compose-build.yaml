@@ -1,0 +1,51 @@
+services:
+  db:
+    container_name: 'ai_mailer_db'
+    image: postgres:alpine
+    restart: always
+    env_file:
+      - .env
+    environment:
+      POSTGRES_HOST: ${POSTGRES_HOST}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${DATABASE_URL}
+    # ports:
+    #   - 5432:5432
+    volumes:
+      - db:/var/lib/postgresql/data
+    networks:
+      - backend
+
+  ngrok:
+    image: ngrok/ngrok:latest
+    restart: unless-stopped
+    environment:
+      - NGROK_AUTHTOKEN=${NGROK_AUTH_TOKEN}
+    command: http --host-header=rewrite --domain=llama-rich-kodiak.ngrok-free.app app:3000 
+    depends_on:
+      - app
+    networks:
+      - backend
+
+  app:
+    build: .
+    container_name: ai_mailer_app
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      - NODE_ENV=production
+    ports:
+      - '3000:3000'
+    depends_on:
+      - db
+    networks:
+      - backend
+
+volumes:
+  db:
+
+networks:
+  backend:
+    driver: bridge
