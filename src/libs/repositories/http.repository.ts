@@ -70,7 +70,7 @@ export class HttpRepository {
       domain,
       first_name: firstName,
       last_name: lastName,
-      api_key: this.configService.get('TEST_HUNTER_API_KEY'),
+      api_key: this.configService.get('HUNTER_API_KEY'),
     };
 
     try {
