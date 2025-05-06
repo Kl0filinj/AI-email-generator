@@ -65,12 +65,15 @@ export class HttpRepository {
     dto: GetCompanyEmailDto,
   ): Promise<HunterMailResponseDto> {
     const { firstName, lastName, domain } = dto;
+    const isDev = this.configService.get('NODE_ENV') === 'dev';
     const url = `${HUNTER_API_BASE_URL}/email-finder`;
     const params = {
       domain,
       first_name: firstName,
       last_name: lastName,
-      api_key: this.configService.get('HUNTER_API_KEY'),
+      api_key: isDev
+        ? this.configService.get('TEST_HUNTER_API_KEY')
+        : this.configService.get('HUNTER_API_KEY'),
     };
 
     try {

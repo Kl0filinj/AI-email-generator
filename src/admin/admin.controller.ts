@@ -3,24 +3,19 @@ import {
   Get,
   Post,
   Body,
-  Patch,
   Param,
   Delete,
   UseGuards,
-  Res,
   InternalServerErrorException,
   UseInterceptors,
-  UploadedFiles,
   UploadedFile,
   ParseFilePipe,
   MaxFileSizeValidator,
   FileTypeValidator,
-  BadRequestException,
 } from '@nestjs/common';
 import { AdminService } from './admin.service';
 import { allowedMimeTypes, AtGuard, LoginDto, MAX_FILE_SIZE } from '@libs';
-import { Response } from 'express';
-import { AnyFilesInterceptor, FileInterceptor } from '@nestjs/platform-express';
+import { FileInterceptor } from '@nestjs/platform-express';
 
 @Controller('admin')
 export class AdminController {

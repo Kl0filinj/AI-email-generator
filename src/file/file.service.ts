@@ -227,7 +227,7 @@ export class FileService {
       if (!contactPerson) {
         cellE.value = officers[0]?.name ?? '';
       } else {
-        cellE.value = removeMiddleName(contactPerson);
+        cellE.value = removeMiddleName(contactPerson, false);
       }
 
       //*** STEP 2 (Hunter email retrieve)

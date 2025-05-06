@@ -1,10 +1,9 @@
-export const removeMiddleName = (name: string) => {
+export const removeMiddleName = (name: string, reverse = true) => {
   const splittedName = name.trim().split(/\s+/);
-  const formatName = (arr: string[]) =>
-    arr
-      .reverse()
-      .join(' ')
-      .replace(/[^a-zA-Z\s]/g, '');
+  const formatName = (arr: string[]) => {
+    const nameArr = reverse ? arr.reverse() : arr;
+    return nameArr.join(' ').replace(/[^a-zA-Z\s]/g, '');
+  };
 
   if (splittedName.length === 2) {
     return formatName(splittedName);
